@@ -55,17 +55,11 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: #1e3d29;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #4a7a5a;
-  border-radius: 2px;
+* {
+  scrollbar-width: none;
 }
 
 .scrollbar-none {

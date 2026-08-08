@@ -13,7 +13,7 @@ import {
 } from '@/lib/constants';
 import type { Profile, FeedPost, BuildingType } from '@/lib/types';
 import { IsoBuilding } from '@/components/IsoBuilding';
-import { MapPin } from 'lucide-react';
+import { MapPin, Bell, ChevronDown } from 'lucide-react';
 
 type FeedFilter = 'NEARBY' | 'MY CITY' | 'MY STATE' | 'ALL INDIA';
 type Tab = 'FEED' | 'LEADERBOARD';
@@ -43,6 +43,7 @@ export function SangamScreen() {
   const [commentOpen, setCommentOpen] = useState<PostWithUser | null>(null);
   const [comments, setComments] = useState<Array<{ id: string; content: string; created_at: string; user?: Profile }>>([]);
   const [commentText, setCommentText] = useState('');
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const loadFeed = useCallback(async (reset = false) => {
     setLoading(true);
@@ -185,36 +186,36 @@ export function SangamScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] pb-20">
-      {/* TAB TOGGLE */}
+    <div className="min-h-screen bg-[#1E3D29] pb-20 overflow-x-hidden">
+      {/* HEADER */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#4A7A5A]">
+        <h1 className="font-mono text-xl text-[#F5EDD0]">CADRE</h1>
+        <Bell size={20} className="text-[#A8C5B0]" />
+      </div>
+
+      {/* STICKY CONTAINER */}
       <div className="sticky top-0 z-20 bg-[#1E3D29] pt-3 px-4 pb-2">
-        <div className="flex gap-2 mb-3">
+        {/* TEXT TABS — underline style */}
+        <div className="flex gap-6 mb-3">
           {(['FEED', 'LEADERBOARD'] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-2 rounded-xl text-xs font-mono transition-colors ${
-                tab === t ? 'bg-[#FF6B00] text-white' : 'bg-[#2D5A3D] text-[#A8C5B0]'
+              className={`pb-1.5 text-xs font-mono transition-colors relative ${
+                tab === t ? 'text-[#FF6B00] border-b-2 border-[#FF6B00]' : 'text-[#6B8F75] border-b-2 border-transparent'
               }`}
             >
               {t}
             </button>
           ))}
         </div>
-        {/* FILTER PILLS */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-none">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-full text-xs font-mono whitespace-nowrap shrink-0 transition-colors ${
-                filter === f ? 'bg-[#FF6B00] text-white' : 'bg-[#2D5A3D] text-[#A8C5B0]'
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
+        {/* SINGLE FILTER BUTTON */}
+        <button
+          onClick={() => setFilterOpen(true)}
+          className="inline-flex items-center gap-1 text-xs font-mono text-[#A8C5B0] btn-press"
+        >
+          📍 {filter} <ChevronDown size={12} />
+        </button>
         {tab === 'LEADERBOARD' && (
           <div className="flex gap-2 mt-2">
             {(['THIS WEEK', 'ALL TIME'] as Range[]).map((r) => (
@@ -257,7 +258,7 @@ export function SangamScreen() {
 
       {/* FEED */}
       {tab === 'FEED' && (
-        <div className="px-4 py-2 space-y-3">
+        <div className="px-4 py-2">
           {loading && posts.length === 0
             ? Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className="h-48 w-full rounded-2xl" />
@@ -286,7 +287,7 @@ export function SangamScreen() {
 
       {/* LEADERBOARD */}
       {tab === 'LEADERBOARD' && (
-        <div className="px-4 py-2 space-y-2">
+        <div className="px-4 py-2">
           {leaderboard.length === 0 ? (
             <EmptyState text="No aspirants in this range yet. Keep building to climb the ranks." />
           ) : (
@@ -296,10 +297,8 @@ export function SangamScreen() {
               return (
                 <div
                   key={p.id}
-                  className={`flex items-center gap-3 p-3 rounded-xl border ${
-                    isMe
-                      ? 'border-[#FF6B00] bg-[#FF6B00]/10'
-                      : 'border-[#4A7A5A] bg-[#2D5A3D]'
+                  className={`flex items-center gap-3 py-3 border-b border-[#4A7A5A] ${
+                    isMe ? 'bg-[#FF6B00]/5' : ''
                   }`}
                 >
                   <span className={`font-mono text-sm w-7 text-center ${i < 3 ? 'text-[#FFD700]' : 'text-[#A8C5B0]'}`}>
@@ -324,6 +323,23 @@ export function SangamScreen() {
           )}
         </div>
       )}
+
+      {/* FILTER SHEET */}
+      <Sheet open={filterOpen} onClose={() => setFilterOpen(false)} title="FILTER">
+        <div className="space-y-2">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => { setFilter(f); setFilterOpen(false); }}
+              className={`w-full py-3 rounded-xl text-sm font-mono transition-colors ${
+                filter === f ? 'bg-[#FF6B00] text-white' : 'bg-[#1E3D29] text-[#A8C5B0]'
+              }`}
+            >
+              📍 {f}
+            </button>
+          ))}
+        </div>
+      </Sheet>
 
       {/* PROFILE SHEET */}
       <Sheet open={!!selectedProfile} onClose={() => setSelectedProfile(null)} title="ASPIRANT">
@@ -394,7 +410,7 @@ function PostCard({
   const subj = subjectByKey(post.subject ?? '');
   const buildingType = (post.building_type as BuildingType) ?? subj?.building ?? 'temple';
   return (
-    <div className="bg-[#2D5A3D] border border-[#4A7A5A] rounded-2xl p-4">
+    <div className="px-4 py-3 border-b border-[#4A7A5A]">
       <div className="flex items-center gap-2 mb-3">
         <button onClick={onUser}>
           <Avatar name={post.user?.name ?? '?'} size={36} />
@@ -410,15 +426,18 @@ function PostCard({
       </div>
 
       {post.type === 'session_complete' ? (
-        <div className="flex items-center gap-3 bg-[#1E3D29] rounded-xl p-3 mb-3">
-          <div className="shrink-0">
-            <IsoBuilding type={buildingType} floors={post.floors_added ?? 1} size={64} />
-          </div>
-          <div>
-            <p className="text-sm text-[#F5EDD0]">
-              Completed {post.hours_today?.toFixed(1)}h of {post.subject}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex-1">
+            <p className="font-mono text-3xl text-[#FF6B00] leading-none">
+              {post.hours_today?.toFixed(1)}h
             </p>
-            <p className="text-xs text-[#A8C5B0]">Building #{post.floors_added} added to city</p>
+            <p className="text-sm text-[#F5EDD0] mt-1">
+              of {post.subject}
+            </p>
+            <p className="text-xs text-[#A8C5B0] mt-0.5">Building #{post.floors_added} added to city</p>
+          </div>
+          <div className="shrink-0">
+            <IsoBuilding type={buildingType} floors={post.floors_added ?? 1} size={72} />
           </div>
         </div>
       ) : (
