@@ -86,7 +86,7 @@ export function Onboarding() {
   const canProceed = step === 0 ? name.trim().length > 0 : true;
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] flex flex-col px-6 py-10">
+    <div className="min-h-screen bg-[#1E3D29] flex flex-col px-6 py-10 overflow-y-auto">
       {/* progress dots */}
       <div className="flex justify-center gap-2 mb-8">
         {[0, 1, 2].map((i) => (

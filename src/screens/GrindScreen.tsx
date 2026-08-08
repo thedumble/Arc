@@ -139,7 +139,7 @@ export function GrindScreen() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] flex flex-col pb-20">
+    <div className="min-h-screen bg-[#1E3D29] flex flex-col pb-20 overflow-y-auto">
       {/* TOP BAR */}
       <div className="flex items-center justify-between px-4 h-12 shrink-0">
         <div className="flex items-center gap-2">

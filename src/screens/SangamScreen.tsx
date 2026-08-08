@@ -186,7 +186,7 @@ export function SangamScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] pb-20 overflow-x-hidden">
+    <div className="min-h-screen bg-[#1E3D29] pb-20 overflow-x-hidden overflow-y-auto">
       {/* HEADER */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#4A7A5A]">
         <h1 className="font-mono text-xl text-[#F5EDD0]">CADRE</h1>

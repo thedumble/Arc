@@ -80,7 +80,7 @@ export function GroupScreen({ groupId, onBack }: { groupId: string; onBack: () =
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1E3D29] px-4 py-6 space-y-4">
+      <div className="min-h-screen bg-[#1E3D29] px-4 py-6 space-y-4 overflow-y-auto">
         <Skeleton className="h-10 w-32 rounded-xl" />
         <Skeleton className="h-40 w-full rounded-2xl" />
         <Skeleton className="h-64 w-full rounded-2xl" />
@@ -90,7 +90,7 @@ export function GroupScreen({ groupId, onBack }: { groupId: string; onBack: () =
 
   if (error || !group) {
     return (
-      <div className="min-h-screen bg-[#1E3D29] px-4 py-6">
+      <div className="min-h-screen bg-[#1E3D29] px-4 py-6 overflow-y-auto">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft size={16} /> Back</Button>
         <p className="text-center text-[#6B8F75] mt-20">{error ?? 'Group not found'}</p>
       </div>
@@ -98,7 +98,7 @@ export function GroupScreen({ groupId, onBack }: { groupId: string; onBack: () =
   }
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] pb-24">
+    <div className="min-h-screen bg-[#1E3D29] pb-24 overflow-y-auto">
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
         <button onClick={onBack} className="flex items-center gap-1 text-[#A8C5B0] text-sm mb-4 btn-press">

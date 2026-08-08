@@ -50,7 +50,7 @@ export function CityScreen({ onBack }: { onBack: () => void }) {
   const onTouchEnd = () => { dragRef.current = null; };
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] flex flex-col">
+    <div className="min-h-screen bg-[#1E3D29] flex flex-col overflow-y-auto">
       {/* header */}
       <div className="flex items-center gap-3 px-4 h-14 shrink-0 border-b border-[#4A7A5A]">
         <button onClick={onBack} className="btn-press text-[#A8C5B0]">

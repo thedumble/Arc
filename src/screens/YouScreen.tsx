@@ -220,7 +220,7 @@ export function YouScreen({
   // ---- auth screen (unchanged logic) ----
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#1E3D29] flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-[#1E3D29] flex flex-col items-center justify-center px-6 overflow-y-auto">
         <div className="w-full max-w-sm">
           <h1 className="font-mono text-4xl text-[#FF6B00] text-center mb-1">JOIN ARC</h1>
           <p className="font-mono text-xs text-[#FFD700] text-center tracking-widest mb-8">
@@ -277,7 +277,7 @@ export function YouScreen({
 
   if (loading || !profile) {
     return (
-      <div className="min-h-screen bg-[#1E3D29] px-4 py-6 space-y-4">
+      <div className="min-h-screen bg-[#1E3D29] px-4 py-6 space-y-4 overflow-y-auto">
         <Skeleton className="h-32 w-full rounded-2xl" />
         <Skeleton className="h-20 w-full rounded-2xl" />
         <Skeleton className="h-64 w-full rounded-2xl" />
@@ -286,7 +286,7 @@ export function YouScreen({
   }
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] pb-20">
+    <div className="min-h-screen bg-[#1E3D29] pb-20 overflow-y-auto">
       {/* PROFILE HEADER */}
       <div className="px-4 pt-6 pb-2">
         <div className="flex items-start justify-between mb-3">
