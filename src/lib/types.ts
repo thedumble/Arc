@@ -81,6 +81,12 @@ export interface FeedPost {
   caption: string | null;
   image_url: string | null;
   created_at: string;
+  post_type: 'session' | 'article' | null;
+  title: string | null;
+  content: string | null;
+  category: string | null;
+  cover_image_url: string | null;
+  read_time_mins: number | null;
 }
 
 export interface Follow {
