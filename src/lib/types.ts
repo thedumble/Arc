@@ -42,6 +42,12 @@ export interface Profile {
   is_public: boolean;
   pro_trial_ends_at: string | null;
   created_at: string;
+  role: 'aspirant' | 'selected' | null;
+  verification_status: 'unverified' | 'pending' | 'verified' | 'rejected' | null;
+  service: string | null;
+  selection_year: number | null;
+  roll_number: string | null;
+  cadre_allotted: string | null;
 }
 
 export interface StudySession {

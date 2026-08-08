@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
 import { Avatar } from '@/components/ui/Avatar';
@@ -623,6 +623,34 @@ function WriteSheet({
   const [content, setContent] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
   const [posting, setPosting] = useState(false);
+  const [autoHours, setAutoHours] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const { data } = await supabase
+        .from('study_sessions')
+        .select('duration_mins, subject')
+        .eq('user_id', userId)
+        .eq('completed', true)
+        .gte('created_at', today + 'T00:00:00');
+      const totalHours = (data ?? []).reduce((sum, s) => sum + (s.duration_mins ?? 0), 0) / 60;
+      if (data && data.length > 0) {
+        const subjCounts: Record<string, number> = {};
+        data.forEach((s) => {
+          if (s.subject) subjCounts[s.subject] = (subjCounts[s.subject] ?? 0) + 1;
+        });
+        const topSubj = Object.entries(subjCounts).sort((a, b) => b[1] - a[1])[0];
+        if (topSubj) setSubject(topSubj[0]);
+        setHours(totalHours.toFixed(1));
+        setAutoHours(true);
+      } else {
+        setHours('0');
+        setAutoHours(false);
+      }
+    })();
+  }, [userId]);
 
   const submitSession = async () => {
     if (!userId) return;
@@ -719,12 +747,17 @@ function WriteSheet({
               <input
                 type="number"
                 step="0.5"
-                min="0.5"
+                min="0"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
                 className="w-full bg-[#F2F2F2] rounded-lg px-3 py-2.5 text-sm text-[#0F0F0F] focus:outline-none"
                 style={{ fontFamily: 'Inter, sans-serif' }}
               />
+              {autoHours && (
+                <p className="text-[12px] text-[#6B6B6B] mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Auto-filled from today's sessions. Edit if needed.
+                </p>
+              )}
             </div>
             <div>
               <p className="text-[12px] text-[#6B6B6B] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Caption</p>

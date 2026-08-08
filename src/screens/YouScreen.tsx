@@ -33,6 +33,7 @@ import {
   Users,
   Search,
   ChevronRight,
+  Upload,
 } from 'lucide-react';
 
 type Tab = 'JOURNEY' | 'TRIBE' | 'SETTINGS';
@@ -64,6 +65,8 @@ export function YouScreen({
   const [detailSession, setDetailSession] = useState<SessionDetail | null>(null);
   const [trialOpen, setTrialOpen] = useState(false);
   const [proJoinedIds, setProJoinedIds] = useState<Set<string>>(new Set());
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   // auth form state
   const [email, setEmail] = useState('');
@@ -288,13 +291,25 @@ export function YouScreen({
   return (
     <div className="min-h-screen bg-[#1E3D29] pb-20 overflow-y-auto">
       {/* PROFILE HEADER */}
-      <div className="px-4 pt-6 pb-2">
+      <div
+        className="px-4 pt-6 pb-2"
+        style={profile.role === 'selected' ? { borderLeft: '3px solid #FFD700' } : undefined}
+      >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-4">
-            <Avatar name={profile.name} size={80} />
+            <Avatar
+              name={profile.name}
+              size={80}
+              className={profile.role === 'selected' ? 'ring-2 ring-[#FFD700]' : ''}
+            />
             <div>
               <h1 className="font-bold text-[18px] text-[#F5EDD0] leading-tight">{profile.name}</h1>
               <p className="text-[13px] text-[#A8C5B0] -mt-0.5">@{profile.username ?? profile.id.slice(0, 8)}</p>
+              {profile.role === 'selected' && (
+                <p className="text-[#FFD700] text-xs font-mono mt-0.5">
+                  ✓ {profile.service ?? ''} {profile.selection_year ?? ''}
+                </p>
+              )}
             </div>
           </div>
           <button
@@ -312,6 +327,25 @@ export function YouScreen({
           <HeaderStat label="Followers" value={followerCount} />
           <HeaderStat label="Following" value={followingCount} />
         </div>
+
+        {/* verification banners */}
+        {profile.role === 'aspirant' && profile.verification_status === 'unverified' && (
+          <button
+            onClick={() => setVerifyOpen(true)}
+            className="bg-[#FFF8E7] text-[#FF6B00] text-xs px-4 py-2 rounded-lg w-full text-left mb-3"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            🎖️ Cleared UPSC? Claim your Selected status →
+          </button>
+        )}
+        {profile.verification_status === 'pending' && (
+          <div
+            className="bg-[#FFF8E7] text-[#6B6B6B] text-xs px-4 py-2 rounded-lg w-full mb-3"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            ⏳ Verification under review
+          </div>
+        )}
 
         <Button
           variant="outline"
@@ -669,6 +703,29 @@ export function YouScreen({
         )}
       </Sheet>
 
+      {/* TOAST */}
+      {toast && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#2D5A3D] text-[#F5EDD0] text-sm px-4 py-2.5 rounded-lg shadow-lg animate-fade-in"
+          style={{ fontFamily: 'Inter, sans-serif' }}
+        >
+          {toast}
+        </div>
+      )}
+
+      {/* VERIFICATION SHEET */}
+      <Sheet open={verifyOpen} onClose={() => setVerifyOpen(false)} title="CLAIM SELECTED STATUS">
+        <VerificationForm
+          userId={profile.id}
+          onClose={() => setVerifyOpen(false)}
+          onSubmitted={() => {
+            setVerifyOpen(false);
+            setToast("Submitted. We'll verify within 48 hours.");
+            setTimeout(() => setToast(null), 4000);
+            refreshProfile();
+          }}
+        />
+      </Sheet>
+
       {/* TRIAL / PRO STATUS SHEET */}
       <Sheet open={trialOpen} onClose={() => setTrialOpen(false)} title="PRO STATUS">
         <div className="space-y-4 text-center">
@@ -824,4 +881,149 @@ async function loadGroups(ids: string[]): Promise<GroupWithCount[]> {
     })
   );
   return withCounts;
+}
+
+const VERIFICATION_SERVICES = ['IAS', 'IPS', 'IFS', 'IRS', 'IFoS', 'Other'] as const;
+
+function VerificationForm({
+  userId,
+  onClose,
+  onSubmitted,
+}: {
+  userId: string;
+  onClose: () => void;
+  onSubmitted: () => void;
+}) {
+  const [service, setService] = useState<string>('IAS');
+  const [year, setYear] = useState('');
+  const [rollNumber, setRollNumber] = useState('');
+  const [cadreAllotted, setCadreAllotted] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    setError(null);
+    if (!year.trim()) { setError('Please enter your year of selection.'); return; }
+    if (!file) { setError('Please upload proof document.'); return; }
+    setSubmitting(true);
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}/${Date.now()}.${fileExt}`;
+    const { error: uploadError } = await supabase.storage
+      .from('verifications')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      setError('Upload failed. Please try again.');
+      setSubmitting(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('verifications')
+      .getPublicUrl(fileName);
+
+    await supabase.from('verifications').insert({
+      user_id: userId,
+      service,
+      selection_year: parseInt(year, 10) || null,
+      roll_number: rollNumber.trim() || null,
+      cadre_allotted: cadreAllotted.trim() || null,
+      document_url: urlData.publicUrl,
+      status: 'pending',
+    });
+
+    await supabase
+      .from('profiles')
+      .update({ verification_status: 'pending' })
+      .eq('id', userId);
+
+    setSubmitting(false);
+    onSubmitted();
+  };
+
+  return (
+    <div className="space-y-4">
+      {error && (
+        <p className="text-[#FF3131] text-xs font-mono">{error}</p>
+      )}
+
+      <div>
+        <p className="text-xs text-[#A8C5B0] font-mono mb-2">Service</p>
+        <div className="flex flex-wrap gap-2">
+          {VERIFICATION_SERVICES.map((s) => (
+            <button
+              key={s}
+              onClick={() => setService(s)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono ${
+                service === s ? 'bg-[#FF6B00] text-white' : 'bg-[#2D5A3D] text-[#A8C5B0]'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Year of selection</p>
+        <input
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder="e.g. 2024"
+          className="w-full bg-[#1E3D29] text-[#F5EDD0] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B8F75] focus:outline-none border border-[#4A7A5A]"
+        />
+      </div>
+
+      <div>
+        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Roll number</p>
+        <input
+          type="text"
+          value={rollNumber}
+          onChange={(e) => setRollNumber(e.target.value)}
+          placeholder="e.g. 1234567"
+          className="w-full bg-[#1E3D29] text-[#F5EDD0] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B8F75] focus:outline-none border border-[#4A7A5A]"
+        />
+      </div>
+
+      <div>
+        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Cadre allotted</p>
+        <input
+          type="text"
+          value={cadreAllotted}
+          onChange={(e) => setCadreAllotted(e.target.value)}
+          placeholder="e.g. Rajasthan"
+          className="w-full bg-[#1E3D29] text-[#F5EDD0] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B8F75] focus:outline-none border border-[#4A7A5A]"
+        />
+      </div>
+
+      <div>
+        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Upload proof</p>
+        <label className="flex items-center gap-2 bg-[#1E3D29] border border-[#4A7A5A] rounded-lg px-3 py-2.5 cursor-pointer">
+          <Upload size={16} className="text-[#A8C5B0]" />
+          <span className="text-xs text-[#A8C5B0] font-mono flex-1">
+            {file ? file.name : 'Choose image or PDF...'}
+          </span>
+        </label>
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          className="hidden"
+          id="verify-file"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+        />
+        <label htmlFor="verify-file" className="block" />
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        disabled={submitting}
+        className="w-full py-3 rounded-xl bg-[#FF6B00] text-white text-sm font-bold btn-press disabled:opacity-50"
+      >
+        {submitting ? 'SUBMITTING...' : 'SUBMIT FOR VERIFICATION'}
+      </button>
+    </div>
+  );
 }
