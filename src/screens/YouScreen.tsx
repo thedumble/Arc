@@ -34,9 +34,10 @@ import {
   Search,
   ChevronRight,
   Upload,
+  Settings as SettingsIcon,
 } from 'lucide-react';
 
-type Tab = 'JOURNEY' | 'TRIBE' | 'SETTINGS';
+type Tab = 'JOURNEY' | 'TRIBE';
 type CityFilter = 'TODAY' | 'WEEK' | 'MONTH' | 'YEAR';
 type TribeSub = 'MY GROUPS' | 'DISCOVER';
 type MaxMembers = 5 | 10 | 20;
@@ -67,6 +68,7 @@ export function YouScreen({
   const [proJoinedIds, setProJoinedIds] = useState<Set<string>>(new Set());
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // auth form state
   const [email, setEmail] = useState('');
@@ -290,35 +292,40 @@ export function YouScreen({
 
   return (
     <div className="min-h-screen bg-[#1E3D29] pb-20 overflow-y-auto">
+      {/* TOP NAV HEADER */}
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <div style={{ width: 24 }} />
+        <span className="font-mono text-sm text-[#F5EDD0] tracking-wide">YOU</span>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setSettingsOpen(true)} className="p-1.5 rounded-lg btn-press" aria-label="Settings">
+            <SettingsIcon size={18} className="text-[#A8C5B0]" />
+          </button>
+          <button onClick={() => setTrialOpen(true)} className="p-1.5 rounded-lg bg-[#FFD700]/15 btn-press" aria-label="PRO status">
+            <Crown size={18} className="text-[#FFD700]" />
+          </button>
+        </div>
+      </div>
+
       {/* PROFILE HEADER */}
       <div
         className="px-4 pt-6 pb-2"
         style={profile.role === 'selected' ? { borderLeft: '3px solid #FFD700' } : undefined}
       >
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-4">
-            <Avatar
-              name={profile.name}
-              size={80}
-              className={profile.role === 'selected' ? 'ring-2 ring-[#FFD700]' : ''}
-            />
-            <div>
-              <h1 className="font-bold text-[18px] text-[#F5EDD0] leading-tight">{profile.name}</h1>
-              <p className="text-[13px] text-[#A8C5B0] -mt-0.5">@{profile.username ?? profile.id.slice(0, 8)}</p>
-              {profile.role === 'selected' && (
-                <p className="text-[#FFD700] text-xs font-mono mt-0.5">
-                  ✓ {profile.service ?? ''} {profile.selection_year ?? ''}
-                </p>
-              )}
-            </div>
+        <div className="flex items-center gap-4 mb-3">
+          <Avatar
+            name={profile.name}
+            size={80}
+            className={profile.role === 'selected' ? 'ring-2 ring-[#FFD700]' : ''}
+          />
+          <div>
+            <h1 className="font-bold text-[18px] text-[#F5EDD0] leading-tight">{profile.name}</h1>
+            <p className="text-[13px] text-[#A8C5B0] -mt-0.5">@{profile.username ?? profile.id.slice(0, 8)}</p>
+            {profile.role === 'selected' && (
+              <p className="text-[#FFD700] text-xs font-mono mt-0.5">
+                ✓ {profile.service ?? ''} {profile.selection_year ?? ''}
+              </p>
+            )}
           </div>
-          <button
-            onClick={() => setTrialOpen(true)}
-            className="shrink-0 p-1.5 rounded-lg bg-[#FFD700]/15 btn-press"
-            aria-label="PRO status"
-          >
-            <Crown size={18} className="text-[#FFD700]" />
-          </button>
         </div>
 
         {/* stats row */}
@@ -404,13 +411,13 @@ export function YouScreen({
       </div>
 
       {/* TABS */}
-      <div className="px-4 flex gap-2 mb-4">
-        {(['JOURNEY', 'TRIBE', 'SETTINGS'] as Tab[]).map((t) => (
+      <div className="px-4 flex gap-6 mb-4 border-b border-[#4A7A5A]/40">
+        {(['JOURNEY', 'TRIBE'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-xl text-xs font-mono transition-colors ${
-              tab === t ? 'bg-[#FF6B00] text-white' : 'bg-[#2D5A3D] text-[#A8C5B0]'
+            className={`flex-1 py-2 text-xs font-mono transition-colors ${
+              tab === t ? 'text-[#FF6B00] border-b-2 border-[#FF6B00] -mb-px' : 'text-[#6B8F75]'
             }`}
           >
             {t}
@@ -424,21 +431,30 @@ export function YouScreen({
           {/* 14-day bar chart */}
           <Card className="p-4">
             <p className="font-mono text-xs text-[#A8C5B0] mb-3">LAST 14 DAYS</p>
-            <div className="flex items-end gap-1 h-24">
-              {dailyHours.map((h, i) => {
-                const maxH = Math.max(...dailyHours, 1);
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div
-                      className="w-full rounded-t bg-gradient-to-t from-[#FF6B00] to-[#FF8C33] transition-all"
-                      style={{ height: `${Math.max(2, (h / maxH) * 80)}px` }}
-                    />
-                    <span className="text-[8px] text-[#6B8F75]">
-                      {i % 2 === 0 ? new Date(Date.now() - (13 - i) * 86400000).getDate() : ''}
-                    </span>
-                  </div>
-                );
-              })}
+            <div className="relative" style={{ height: 120 }}>
+              <span className="absolute top-0 left-0 text-[10px] text-[#6B8F75] font-mono">hours</span>
+              <div className="flex items-end gap-0.5 h-full pt-4">
+                {dailyHours.map((h, i) => {
+                  const isToday = i === 13;
+                  const isZero = h === 0;
+                  const maxH = Math.max(...dailyHours, 1);
+                  const barHeight = isZero ? 2 : Math.max(8, (h / maxH) * 80);
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
+                      <div
+                        className="w-full rounded-t transition-all"
+                        style={{
+                          height: `${barHeight}px`,
+                          backgroundColor: isZero ? '#4A7A5A' : isToday ? '#FF8C33' : '#FF6B00',
+                        }}
+                      />
+                      <span className="text-[8px] text-[#6B8F75] mt-1">
+                        {i % 3 === 0 ? new Date(Date.now() - (13 - i) * 86400000).getDate() : ''}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </Card>
 
@@ -571,35 +587,6 @@ export function YouScreen({
         </div>
       )}
 
-      {/* SETTINGS TAB */}
-      {tab === 'SETTINGS' && (
-        <div className="px-4 space-y-3">
-          <Card className="p-4 space-y-3">
-            <SettingRow icon={<Bell size={16} />} label="Notifications" defaultOn />
-            <div className="h-px bg-[#4A7A5A]/40" />
-            <SettingRow icon={<MapPin size={16} />} label="Public profile" defaultOn={profile.is_public} onToggle={async (v) => {
-              await supabase.from('profiles').update({ is_public: v }).eq('id', profile.id);
-              refreshProfile();
-            }} />
-          </Card>
-
-          <Button variant="outline" size="md" fullWidth onClick={() => {
-            setEditName(profile.name);
-            setEditCity(profile.city ?? '');
-            setEditStage(profile.prep_stage);
-            setEditOpen(true);
-          }}>
-            <Pencil size={14} /> EDIT NAME, CITY, STAGE
-          </Button>
-
-          <Button variant="danger" size="md" fullWidth onClick={handleSignOut}>
-            <LogOut size={14} /> SIGN OUT
-          </Button>
-
-          <button className="w-full text-[#FF3131] text-xs py-4">Delete account</button>
-        </div>
-      )}
-
       {/* EDIT SHEET */}
       <Sheet open={editOpen} onClose={() => setEditOpen(false)} title="EDIT PROFILE">
         <div className="space-y-4">
@@ -724,6 +711,35 @@ export function YouScreen({
             refreshProfile();
           }}
         />
+      </Sheet>
+
+      {/* SETTINGS SHEET */}
+      <Sheet open={settingsOpen} onClose={() => setSettingsOpen(false)} title="SETTINGS">
+        <div className="space-y-3">
+          <Card className="p-4 space-y-3">
+            <SettingRow icon={<Bell size={16} />} label="Notifications" defaultOn />
+            <div className="h-px bg-[#4A7A5A]/40" />
+            <SettingRow icon={<MapPin size={16} />} label="Public profile" defaultOn={profile.is_public} onToggle={async (v) => {
+              await supabase.from('profiles').update({ is_public: v }).eq('id', profile.id);
+              refreshProfile();
+            }} />
+          </Card>
+
+          <Button variant="outline" size="md" fullWidth onClick={() => {
+            setEditName(profile.name);
+            setEditCity(profile.city ?? '');
+            setEditStage(profile.prep_stage);
+            setEditOpen(true);
+          }}>
+            <Pencil size={14} /> EDIT NAME, CITY, STAGE
+          </Button>
+
+          <Button variant="danger" size="md" fullWidth onClick={handleSignOut}>
+            <LogOut size={14} /> SIGN OUT
+          </Button>
+
+          <button className="w-full text-[#FF3131] text-xs py-4">Delete account</button>
+        </div>
       </Sheet>
 
       {/* TRIAL / PRO STATUS SHEET */}
