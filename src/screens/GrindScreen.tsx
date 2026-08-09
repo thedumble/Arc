@@ -495,7 +495,7 @@ export function GrindScreen() {
                 disabled={sharedToSangam}
                 className="w-full h-[52px] rounded-xl border border-[#F5EDD0] text-[#F5EDD0] font-mono text-sm flex items-center justify-center gap-2 transition-colors hover:bg-[#F5EDD0]/10 disabled:opacity-50"
               >
-                <Share2 size={18} /> {sharedToSangam ? 'SHARED' : 'SHARE TO SANGAM'}
+                <Share2 size={18} /> {sharedToSangam ? 'SHARED' : 'SHARE TO CADRE'}
               </button>
               <button
                 onClick={sess.dismissComplete}

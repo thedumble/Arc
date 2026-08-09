@@ -101,7 +101,7 @@ function BottomNav({
 }) {
   const tabs: { key: Route; icon: string; label: string }[] = [
     { key: 'grind', icon: '🏗️', label: 'GRIND' },
-    { key: 'sangam', icon: '🌊', label: 'SANGAM' },
+    { key: 'sangam', icon: '🌊', label: 'CADRE' },
     { key: 'you', icon: '👤', label: 'YOU' },
   ];
   return (
