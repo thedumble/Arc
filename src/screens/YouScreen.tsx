@@ -20,6 +20,7 @@ import type {
   StudyGroup,
   BuildingType,
   Profile,
+  FeedPost,
 } from '@/lib/types';
 import {
   Pencil,
@@ -56,6 +57,8 @@ export function YouScreen({
   const [tab, setTab] = useState<Tab>('JOURNEY');
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [sessions, setSessions] = useState<StudySession[]>([]);
+  const [userPosts, setUserPosts] = useState<FeedPost[]>([]);
+  const [detailPost, setDetailPost] = useState<FeedPost | null>(null);
   const [groups, setGroups] = useState<GroupWithCount[]>([]);
   const [discoverGroups, setDiscoverGroups] = useState<GroupWithCount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,6 +124,13 @@ export function YouScreen({
     setBuildings((b.data ?? []) as Building[]);
     setSessions((s.data ?? []) as StudySession[]);
 
+    const { data: posts } = await supabase
+      .from('feed_posts')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
+    setUserPosts((posts ?? []) as FeedPost[]);
+
     // last 14 days hours
     const days: number[] = [];
     for (let i = 13; i >= 0; i--) {
@@ -176,7 +186,7 @@ export function YouScreen({
 
   const followerCount = 0;
   const followingCount = 0;
-  const postCount = sessions.length;
+  const postCount = userPosts.length;
 
   const saveEdit = async () => {
     if (!profile) return;
@@ -458,33 +468,51 @@ export function YouScreen({
             </div>
           </Card>
 
-          {/* SESSION GRID — Instagram style */}
+          {/* POSTS GRID */}
           <div>
-            <p className="font-mono text-xs text-[#A8C5B0] mb-2">SESSION GRID</p>
-            {sessions.length === 0 ? (
+            <p className="font-mono text-xs text-[#A8C5B0] mb-2">POSTS</p>
+            {userPosts.length === 0 ? (
               <Card className="p-6 text-center">
-                <p className="text-[#6B8F75] text-sm">No sessions yet. Start your first build!</p>
+                <p className="text-[#6B8F75] text-sm">No posts yet. Share your first update!</p>
               </Card>
             ) : (
               <div className="grid grid-cols-3 gap-1.5">
-                {sessions.slice(0, 30).map((s) => {
-                  const subj = subjectByKey(s.subject ?? '');
+                {userPosts.slice(0, 30).map((p) => {
+                  const isArticle = p.post_type === 'article';
+                  const isSession = p.post_type === 'session' || p.type === 'session_complete';
                   return (
                     <button
-                      key={s.id}
-                      onClick={() => setDetailSession({ ...s, subject_label: subj?.label ?? s.subject ?? 'Session' })}
-                      className="relative aspect-square rounded-lg overflow-hidden bg-[#2D5A3D] border border-[#4A7A5A] btn-press flex items-center justify-center"
+                      key={p.id}
+                      onClick={() => setDetailPost(p)}
+                      className="relative rounded-xl overflow-hidden bg-[#2D5A3D] border border-[#4A7A5A] btn-press flex flex-col items-center justify-center"
+                      style={{ aspectRatio: '1 / 1', maxHeight: 120 }}
                     >
-                      <IsoBuilding
-                        type={(s.building_type ?? 'temple') as BuildingType}
-                        floors={Math.max(1, Math.floor((s.duration_mins ?? 25) / 10))}
-                        dead={s.abandoned}
-                        size={70}
-                      />
-                      <span className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1">
-                        <span className="block text-[9px] text-[#F5EDD0] truncate text-left">{subj?.label ?? s.subject ?? 'Session'}</span>
-                        <span className="block text-[9px] text-[#FFD700] font-mono text-right">{formatDuration(s.duration_mins ?? 0)}</span>
-                      </span>
+                      <div className="flex-1 flex items-center justify-center w-full">
+                        {isArticle ? (
+                          <span className="text-2xl">📝</span>
+                        ) : isSession ? (
+                          <IsoBuilding
+                            type={(p.building_type ?? 'temple') as BuildingType}
+                            floors={Math.max(1, Math.floor((p.hours_today ?? 1) / 0.5))}
+                            dead={false}
+                            size={80}
+                          />
+                        ) : (
+                          <span className="text-2xl">📝</span>
+                        )}
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between px-1.5 py-1">
+                        {isArticle ? (
+                          <span className="text-[10px] text-[#FF6B00] truncate max-w-[60%]">{p.category ?? 'Article'}</span>
+                        ) : (
+                          <span className="text-[10px] text-[#A8C5B0] truncate max-w-[60%]">{p.subject ?? 'Session'}</span>
+                        )}
+                        {isArticle ? (
+                          <span className="text-[10px] text-[#6B8F75] shrink-0">{p.read_time_mins ?? 0}min</span>
+                        ) : (
+                          <span className="text-[10px] text-[#FF6B00] shrink-0">{p.hours_today ?? 0}h</span>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
@@ -667,27 +695,9 @@ export function YouScreen({
         </div>
       </Sheet>
 
-      {/* SESSION DETAIL SHEET */}
-      <Sheet open={!!detailSession} onClose={() => setDetailSession(null)} title="SESSION DETAIL">
-        {detailSession && (
-          <div className="space-y-4">
-            <div className="flex justify-center py-2">
-              <IsoBuilding
-                type={(detailSession.building_type ?? 'temple') as BuildingType}
-                floors={Math.max(1, Math.floor((detailSession.duration_mins ?? 25) / 10))}
-                dead={detailSession.abandoned}
-                size={140}
-              />
-            </div>
-            <div className="space-y-2">
-              <Row label="Subject" value={detailSession.subject_label} />
-              <Row label="Topic" value={detailSession.topic ?? '—'} />
-              <Row label="Duration" value={formatDuration(detailSession.duration_mins ?? 0)} />
-              <Row label="Status" value={detailSession.abandoned ? 'Abandoned' : detailSession.completed ? 'Completed' : 'In progress'} />
-              <Row label="When" value={timeAgo(detailSession.created_at)} />
-            </div>
-          </div>
-        )}
+      {/* POST DETAIL SHEET */}
+      <Sheet open={!!detailPost} onClose={() => setDetailPost(null)} title={detailPost?.post_type === 'article' ? 'ARTICLE' : 'SESSION'}>
+        {detailPost && <PostDetail post={detailPost} />}
       </Sheet>
 
       {/* TOAST */}
@@ -800,6 +810,43 @@ function Row({ label, value }: { label: string; value: string }) {
     <div className="flex justify-between items-center">
       <span className="text-xs text-[#A8C5B0] font-mono">{label}</span>
       <span className="text-sm text-[#F5EDD0] text-right max-w-[60%] truncate">{value}</span>
+    </div>
+  );
+}
+
+function PostDetail({ post }: { post: FeedPost }) {
+  const isArticle = post.post_type === 'article';
+  const isSession = post.post_type === 'session' || post.type === 'session_complete';
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-center py-2">
+        {isArticle ? (
+          <span className="text-5xl">📝</span>
+        ) : isSession ? (
+          <IsoBuilding
+            type={(post.building_type ?? 'temple') as BuildingType}
+            floors={Math.max(1, Math.floor((post.hours_today ?? 1) / 0.5))}
+            dead={false}
+            size={140}
+          />
+        ) : (
+          <span className="text-5xl">📝</span>
+        )}
+      </div>
+      <div className="space-y-2">
+        {isArticle && post.title && <Row label="Title" value={post.title} />}
+        {isArticle && post.category && <Row label="Category" value={post.category} />}
+        {isArticle && <Row label="Read time" value={`${post.read_time_mins ?? 0} min`} />}
+        {isSession && post.subject && <Row label="Subject" value={post.subject} />}
+        {isSession && <Row label="Hours" value={`${post.hours_today ?? 0}h`} />}
+        {post.caption && <Row label="Caption" value={post.caption} />}
+        <Row label="Posted" value={timeAgo(post.created_at)} />
+      </div>
+      {isArticle && post.content && (
+        <div className="bg-[#2D5A3D] rounded-xl p-3 border border-[#4A7A5A]">
+          <p className="text-sm text-[#F5EDD0] whitespace-pre-wrap">{post.content}</p>
+        </div>
+      )}
     </div>
   );
 }
