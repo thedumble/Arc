@@ -235,23 +235,23 @@ export function YouScreen({
   // ---- auth screen (unchanged logic) ----
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#1E3D29] flex flex-col items-center justify-center px-6 overflow-y-auto">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 overflow-y-auto">
         <div className="w-full max-w-sm">
-          <h1 className="font-mono text-4xl text-[#FF6B00] text-center mb-1">JOIN ARC</h1>
-          <p className="font-mono text-xs text-[#FFD700] text-center tracking-widest mb-8">
+          <h1 className="font-mono text-4xl text-[#FF6719] text-center mb-1">JOIN ARC</h1>
+          <p className="font-mono text-xs text-[#6B6B6B] text-center tracking-widest mb-8">
             INDIA'S UPSC SIGNAL
           </p>
-          <Card className="p-6">
+          <div className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
             <div className="flex gap-2 mb-4">
               <button
                 onClick={() => { setAuthMode('signup'); setAuthErr(null); }}
-                className={`flex-1 py-2 rounded-lg text-xs font-mono ${authMode === 'signup' ? 'bg-[#FF6B00] text-white' : 'text-[#A8C5B0]'}`}
+                className={`flex-1 py-2 rounded-lg text-xs font-mono ${authMode === 'signup' ? 'bg-[#FF6719] text-white' : 'text-[#6B6B6B] border border-[#E5E5E5]'}`}
               >
                 JOIN
               </button>
               <button
                 onClick={() => { setAuthMode('signin'); setAuthErr(null); }}
-                className={`flex-1 py-2 rounded-lg text-xs font-mono ${authMode === 'signin' ? 'bg-[#FF6B00] text-white' : 'text-[#A8C5B0]'}`}
+                className={`flex-1 py-2 rounded-lg text-xs font-mono ${authMode === 'signin' ? 'bg-[#FF6719] text-white' : 'text-[#6B6B6B] border border-[#E5E5E5]'}`}
               >
                 SIGN IN
               </button>
@@ -261,14 +261,14 @@ export function YouScreen({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="w-full bg-[#1E3D29] border border-[#4A7A5A] rounded-xl px-4 py-3 text-white text-sm mb-3 focus:outline-none focus:border-[#FF6B00]"
+              className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 text-[#0F0F0F] text-sm mb-3 focus:outline-none focus:border-[#FF6719]"
             />
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full bg-[#1E3D29] border border-[#4A7A5A] rounded-xl px-4 py-3 text-white text-sm mb-3 focus:outline-none focus:border-[#FF6B00]"
+              className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 text-[#0F0F0F] text-sm mb-3 focus:outline-none focus:border-[#FF6719]"
             />
             {authErr && <p className="text-[#FF3131] text-xs mb-3">{authErr}</p>}
             <Button
@@ -283,8 +283,8 @@ export function YouScreen({
             >
               {authMode === 'signup' ? 'CREATE ACCOUNT' : 'SIGN IN'}
             </Button>
-          </Card>
-          <p className="text-center text-[#6B8F75] text-xs mt-4">or continue as guest</p>
+          </div>
+          <p className="text-center text-[#6B6B6B] text-xs mt-4">or continue as guest</p>
         </div>
       </div>
     );
@@ -292,7 +292,7 @@ export function YouScreen({
 
   if (loading || !profile) {
     return (
-      <div className="min-h-screen bg-[#1E3D29] px-4 py-6 space-y-4 overflow-y-auto">
+      <div className="min-h-screen bg-white px-4 py-6 space-y-4 overflow-y-auto">
         <Skeleton className="h-32 w-full rounded-2xl" />
         <Skeleton className="h-20 w-full rounded-2xl" />
         <Skeleton className="h-64 w-full rounded-2xl" />
@@ -301,37 +301,37 @@ export function YouScreen({
   }
 
   return (
-    <div className="min-h-screen bg-[#1E3D29] pb-20 overflow-y-auto">
+    <div className="min-h-screen bg-white text-[#0F0F0F] pb-20 overflow-y-auto">
       {/* TOP NAV HEADER */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+      <div className="flex items-center justify-between px-4 pt-4 pb-2 bg-white border-b border-[#E5E5E5]">
         <div style={{ width: 24 }} />
-        <span className="font-mono text-sm text-[#F5EDD0] tracking-wide">YOU</span>
+        <span className="font-mono text-sm text-[#0F0F0F] tracking-wide">YOU</span>
         <div className="flex items-center gap-2">
           <button onClick={() => setSettingsOpen(true)} className="p-1.5 rounded-lg btn-press" aria-label="Settings">
-            <SettingsIcon size={18} className="text-[#A8C5B0]" />
+            <SettingsIcon size={18} className="text-[#6B6B6B]" />
           </button>
-          <button onClick={() => setTrialOpen(true)} className="p-1.5 rounded-lg bg-[#FFD700]/15 btn-press" aria-label="PRO status">
-            <Crown size={18} className="text-[#FFD700]" />
+          <button onClick={() => setTrialOpen(true)} className="p-1.5 rounded-lg btn-press" aria-label="PRO status">
+            <Crown size={18} className="text-[#6B6B6B]" />
           </button>
         </div>
       </div>
 
       {/* PROFILE HEADER */}
       <div
-        className="px-4 pt-6 pb-2"
-        style={profile.role === 'selected' ? { borderLeft: '3px solid #FFD700' } : undefined}
+        className="px-4 pt-6 pb-2 bg-white"
+        style={profile.role === 'selected' ? { borderLeft: '3px solid #FF6719' } : undefined}
       >
         <div className="flex items-center gap-4 mb-3">
           <Avatar
             name={profile.name}
             size={80}
-            className={profile.role === 'selected' ? 'ring-2 ring-[#FFD700]' : ''}
+            className={`bg-[#FF6719] text-white ${profile.role === 'selected' ? 'ring-2 ring-[#FF6719]' : ''}`}
           />
           <div>
-            <h1 className="font-bold text-[18px] text-[#F5EDD0] leading-tight">{profile.name}</h1>
-            <p className="text-[13px] text-[#A8C5B0] -mt-0.5">@{profile.username ?? profile.id.slice(0, 8)}</p>
+            <h1 className="font-bold text-[18px] text-[#0F0F0F] leading-tight">{profile.name}</h1>
+            <p className="text-[13px] text-[#6B6B6B] -mt-0.5">@{profile.username ?? profile.id.slice(0, 8)}</p>
             {profile.role === 'selected' && (
-              <p className="text-[#FFD700] text-xs font-mono mt-0.5">
+              <p className="text-[#FF6719] text-xs font-mono mt-0.5">
                 ✓ {profile.service ?? ''} {profile.selection_year ?? ''}
               </p>
             )}
@@ -349,7 +349,7 @@ export function YouScreen({
         {profile.role === 'aspirant' && profile.verification_status === 'unverified' && (
           <button
             onClick={() => setVerifyOpen(true)}
-            className="bg-[#FFF8E7] text-[#FF6B00] text-xs px-4 py-2 rounded-lg w-full text-left mb-3"
+            className="bg-[#FFF8E7] text-[#FF6719] text-xs px-4 py-2 rounded-lg w-full text-left mb-3"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             🎖️ Cleared UPSC? Claim your Selected status →
@@ -364,19 +364,17 @@ export function YouScreen({
           </div>
         )}
 
-        <Button
-          variant="outline"
-          size="sm"
-          fullWidth
+        <button
           onClick={() => {
             setEditName(profile.name);
             setEditCity(profile.city ?? '');
             setEditStage(profile.prep_stage);
             setEditOpen(true);
           }}
+          className="w-full border border-[#E5E5E5] text-[#0F0F0F] bg-white rounded-xl py-2.5 text-xs font-mono flex items-center justify-center gap-2 btn-press"
         >
           <Pencil size={14} /> EDIT PROFILE
-        </Button>
+        </button>
       </div>
 
       {/* COMPACT STATS DIVIDER ROW */}
@@ -392,42 +390,42 @@ export function YouScreen({
 
       {/* MY CITY with filter tabs */}
       <div className="px-4 mb-4">
-        <Card className="p-0 overflow-hidden">
+        <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl overflow-hidden">
           <div className="p-4 flex items-center gap-4" onClick={onOpenCity}>
-            <div className="shrink-0 w-24 h-24 rounded-xl overflow-hidden bg-[#1E3D29]">
+            <div className="shrink-0 w-24 h-24 rounded-xl overflow-hidden bg-[#F2F2F2]">
               <IsoCity buildings={filteredBuildings.slice(-6)} size={96} cols={3} />
             </div>
             <div className="flex-1">
-              <p className="font-mono text-sm text-[#F5EDD0]">MY CITY</p>
-              <p className="text-xs text-[#A8C5B0]">{filteredBuildings.length} buildings</p>
-              <p className="text-xs text-[#FF6B00] mt-1">Tap to explore →</p>
+              <p className="font-mono text-sm text-[#0F0F0F]">MY CITY</p>
+              <p className="text-xs text-[#6B6B6B]">{filteredBuildings.length} buildings</p>
+              <p className="text-xs text-[#FF6719] mt-1">Tap to explore →</p>
             </div>
-            <Building2 size={20} className="text-[#6B8F75]" />
+            <Building2 size={20} className="text-[#6B6B6B]" />
           </div>
-          <div className="flex border-t border-[#4A7A5A]/60">
+          <div className="flex border-t border-[#E5E5E5]">
             {(['TODAY', 'WEEK', 'MONTH', 'YEAR'] as CityFilter[]).map((f) => (
               <button
                 key={f}
                 onClick={(e) => { e.stopPropagation(); setCityFilter(f); }}
                 className={`flex-1 py-2 text-[10px] font-mono tracking-wide transition-colors ${
-                  cityFilter === f ? 'text-[#FF6B00] border-t-2 border-[#FF6B00] -mt-px bg-[#FF6B00]/5' : 'text-[#6B8F75]'
+                  cityFilter === f ? 'text-[#FF6719] border-t-2 border-[#FF6719] -mt-px bg-[#FF6719]/5' : 'text-[#6B6B6B]'
                 }`}
               >
                 {f}
               </button>
             ))}
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* TABS */}
-      <div className="px-4 flex gap-6 mb-4 border-b border-[#4A7A5A]/40">
+      <div className="px-4 flex gap-6 mb-4 border-b border-[#E5E5E5]">
         {(['JOURNEY', 'TRIBE'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`flex-1 py-2 text-xs font-mono transition-colors ${
-              tab === t ? 'text-[#FF6B00] border-b-2 border-[#FF6B00] -mb-px' : 'text-[#6B8F75]'
+              tab === t ? 'text-[#FF6719] border-b-2 border-[#FF6719] -mb-px' : 'text-[#6B6B6B]'
             }`}
           >
             {t}
@@ -439,10 +437,10 @@ export function YouScreen({
       {tab === 'JOURNEY' && (
         <div className="px-4 space-y-4">
           {/* 14-day bar chart */}
-          <Card className="p-4">
-            <p className="font-mono text-xs text-[#A8C5B0] mb-3">LAST 14 DAYS</p>
+          <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-4">
+            <p className="font-mono text-xs text-[#6B6B6B] mb-3">LAST 14 DAYS</p>
             <div className="relative" style={{ height: 120 }}>
-              <span className="absolute top-0 left-0 text-[10px] text-[#6B8F75] font-mono">hours</span>
+              <span className="absolute top-0 left-0 text-[10px] text-[#6B6B6B] font-mono">hours</span>
               <div className="flex items-end gap-0.5 h-full pt-4">
                 {dailyHours.map((h, i) => {
                   const isToday = i === 13;
@@ -455,10 +453,10 @@ export function YouScreen({
                         className="w-full rounded-t transition-all"
                         style={{
                           height: `${barHeight}px`,
-                          backgroundColor: isZero ? '#4A7A5A' : isToday ? '#FF8C33' : '#FF6B00',
+                          backgroundColor: isZero ? '#E5E5E5' : '#FF6719',
                         }}
                       />
-                      <span className="text-[8px] text-[#6B8F75] mt-1">
+                      <span className="text-[8px] text-[#6B6B6B] mt-1">
                         {i % 3 === 0 ? new Date(Date.now() - (13 - i) * 86400000).getDate() : ''}
                       </span>
                     </div>
@@ -466,15 +464,15 @@ export function YouScreen({
                 })}
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* POSTS GRID */}
           <div>
-            <p className="font-mono text-xs text-[#A8C5B0] mb-2">POSTS</p>
+            <p className="font-mono text-xs text-[#6B6B6B] mb-2">POSTS</p>
             {userPosts.length === 0 ? (
-              <Card className="p-6 text-center">
-                <p className="text-[#6B8F75] text-sm">No posts yet. Share your first update!</p>
-              </Card>
+              <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-6 text-center">
+                <p className="text-[#6B6B6B] text-sm">No posts yet. Share your first update!</p>
+              </div>
             ) : (
               <div className="grid grid-cols-3 gap-1.5">
                 {userPosts.slice(0, 30).map((p) => {
@@ -484,7 +482,7 @@ export function YouScreen({
                     <button
                       key={p.id}
                       onClick={() => setDetailPost(p)}
-                      className="relative rounded-xl overflow-hidden bg-[#2D5A3D] border border-[#4A7A5A] btn-press flex flex-col items-center justify-center"
+                      className="relative rounded-xl overflow-hidden bg-[#F2F2F2] border border-[#E5E5E5] btn-press flex flex-col items-center justify-center"
                       style={{ aspectRatio: '1 / 1', maxHeight: 120 }}
                     >
                       <div className="flex-1 flex items-center justify-center w-full">
@@ -503,14 +501,14 @@ export function YouScreen({
                       </div>
                       <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between px-1.5 py-1">
                         {isArticle ? (
-                          <span className="text-[10px] text-[#FF6B00] truncate max-w-[60%]">{p.category ?? 'Article'}</span>
+                          <span className="text-[10px] text-[#FF6719] truncate max-w-[60%]">{p.category ?? 'Article'}</span>
                         ) : (
-                          <span className="text-[10px] text-[#A8C5B0] truncate max-w-[60%]">{p.subject ?? 'Session'}</span>
+                          <span className="text-[10px] text-[#6B6B6B] truncate max-w-[60%]">{p.subject ?? 'Session'}</span>
                         )}
                         {isArticle ? (
-                          <span className="text-[10px] text-[#6B8F75] shrink-0">{p.read_time_mins ?? 0}min</span>
+                          <span className="text-[10px] text-[#6B6B6B] shrink-0">{p.read_time_mins ?? 0}min</span>
                         ) : (
-                          <span className="text-[10px] text-[#FF6B00] shrink-0">{p.hours_today ?? 0}h</span>
+                          <span className="text-[10px] text-[#FF6719] shrink-0">{p.hours_today ?? 0}h</span>
                         )}
                       </div>
                     </button>
@@ -528,9 +526,9 @@ export function YouScreen({
           {trialActive ? (
             <>
               {/* PRO TRIAL banner */}
-              <div className="flex items-center gap-2 bg-[#FFD700]/15 border border-[#FFD700]/40 rounded-xl px-4 py-2.5">
-                <Crown size={16} className="text-[#FFD700]" />
-                <p className="font-mono text-xs text-[#FFD700] tracking-wide">
+              <div className="flex items-center gap-2 bg-[#FFF8E7] border border-[#FF6719]/20 rounded-xl px-4 py-2.5">
+                <Crown size={16} className="text-[#FF6719]" />
+                <p className="font-mono text-xs text-[#FF6719] tracking-wide">
                   PRO TRIAL — {trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'} left
                 </p>
               </div>
@@ -542,7 +540,7 @@ export function YouScreen({
                     key={t}
                     onClick={() => setTribeSub(t)}
                     className={`flex-1 py-2 rounded-xl text-[10px] font-mono tracking-wide transition-colors ${
-                      tribeSub === t ? 'bg-[#FF6B00] text-white' : 'bg-[#2D5A3D] text-[#A8C5B0]'
+                      tribeSub === t ? 'bg-[#FF6719] text-white' : 'bg-white text-[#6B6B6B] border border-[#E5E5E5]'
                     }`}
                   >
                     {t}
@@ -552,15 +550,18 @@ export function YouScreen({
 
               {tribeSub === 'MY GROUPS' && (
                 <>
-                  <Button variant="outline" size="sm" fullWidth onClick={() => setCreateOpen(true)}>
+                  <button
+                    onClick={() => setCreateOpen(true)}
+                    className="w-full border border-[#E5E5E5] text-[#0F0F0F] bg-white rounded-xl py-2.5 text-xs font-mono flex items-center justify-center gap-2 btn-press"
+                  >
                     <Plus size={14} /> CREATE GROUP
-                  </Button>
+                  </button>
                   {groups.length === 0 ? (
-                    <Card className="p-6 text-center">
-                      <Users size={28} className="text-[#6B8F75] mx-auto mb-2" />
-                      <p className="text-[#6B8F75] text-sm mb-1">No study groups yet.</p>
-                      <p className="text-[#6B8F75] text-xs">Create one to prep with aspirants near you.</p>
-                    </Card>
+                    <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-6 text-center">
+                      <Users size={28} className="text-[#6B6B6B] mx-auto mb-2" />
+                      <p className="text-[#6B6B6B] text-sm mb-1">No study groups yet.</p>
+                      <p className="text-[#6B6B6B] text-xs">Create one to prep with aspirants near you.</p>
+                    </div>
                   ) : (
                     groups.map((g) => (
                       <GroupCard key={g.id} group={g} onOpen={() => onOpenGroup(g.id)} />
@@ -571,14 +572,14 @@ export function YouScreen({
 
               {tribeSub === 'DISCOVER' && (
                 <>
-                  <div className="flex items-center gap-2 text-[#A8C5B0]">
+                  <div className="flex items-center gap-2 text-[#6B6B6B]">
                     <Search size={14} />
                     <p className="font-mono text-xs tracking-wide">GROUPS NEAR YOU</p>
                   </div>
                   {discoverGroups.length === 0 ? (
-                    <Card className="p-6 text-center">
-                      <p className="text-[#6B8F75] text-sm">No groups to discover yet.</p>
-                    </Card>
+                    <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-6 text-center">
+                      <p className="text-[#6B6B6B] text-sm">No groups to discover yet.</p>
+                    </div>
                   ) : (
                     <div className="space-y-2">
                       {discoverGroups.map((g) => (
@@ -598,111 +599,129 @@ export function YouScreen({
           ) : (
             /* LOCK screen */
             <div className="pt-8 px-4">
-              <Card className="p-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-[#FFD700]/15 flex items-center justify-center mx-auto mb-4">
-                  <Lock size={28} className="text-[#FFD700]" />
+              <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 rounded-full bg-[#FFF8E7] flex items-center justify-center mx-auto mb-4">
+                  <Lock size={28} className="text-[#FF6719]" />
                 </div>
-                <h2 className="font-mono text-lg text-[#F5EDD0] mb-2">TRIBE IS A PRO FEATURE</h2>
-                <p className="text-[#A8C5B0] text-sm mb-6">
+                <h2 className="font-mono text-lg text-[#0F0F0F] mb-2">TRIBE IS A PRO FEATURE</h2>
+                <p className="text-[#6B6B6B] text-sm mb-6">
                   Your 7-day free trial has ended. Upgrade to PRO to create study groups, discover aspirants near you, and prep together.
                 </p>
-                <Button variant="gold" size="lg" fullWidth onClick={() => setTrialOpen(true)}>
+                <button
+                  onClick={() => setTrialOpen(true)}
+                  className="w-full bg-[#FF6719] text-white rounded-xl py-3 text-sm font-bold btn-press flex items-center justify-center gap-2"
+                >
                   <Crown size={16} /> UPGRADE TO PRO
-                </Button>
-              </Card>
+                </button>
+              </div>
             </div>
           )}
         </div>
       )}
 
       {/* EDIT SHEET */}
-      <Sheet open={editOpen} onClose={() => setEditOpen(false)} title="EDIT PROFILE">
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs text-[#A8C5B0] font-mono">NAME</label>
-            <input
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              className="w-full bg-[#1E3D29] border border-[#4A7A5A] rounded-xl px-4 py-3 text-white text-sm mt-1 focus:outline-none focus:border-[#FF6B00]"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-[#A8C5B0] font-mono">CITY</label>
-            <input
-              value={editCity}
-              onChange={(e) => setEditCity(e.target.value)}
-              className="w-full bg-[#1E3D29] border border-[#4A7A5A] rounded-xl px-4 py-3 text-white text-sm mt-1 focus:outline-none focus:border-[#FF6B00]"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-[#A8C5B0] font-mono">PREP STAGE</label>
-            <div className="grid grid-cols-1 gap-2 mt-1">
-              {PREP_STAGES.map((s) => (
-                <button
-                  key={s.key}
-                  onClick={() => setEditStage(s.key)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm btn-press ${
-                    editStage === s.key ? 'border-[#FF6B00] bg-[#FF6B00]/10' : 'border-[#4A7A5A] bg-[#1E3D29]'
-                  }`}
-                >
-                  <span>{s.emoji}</span>
-                  <span className="text-[#F5EDD0]">{s.label}</span>
-                </button>
-              ))}
+      {editOpen && (
+        <LightSheet open={editOpen} onClose={() => setEditOpen(false)} title="EDIT PROFILE">
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs text-[#6B6B6B] font-mono">NAME</label>
+              <input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 text-[#0F0F0F] text-sm mt-1 focus:outline-none focus:border-[#FF6719]"
+              />
             </div>
+            <div>
+              <label className="text-xs text-[#6B6B6B] font-mono">CITY</label>
+              <input
+                value={editCity}
+                onChange={(e) => setEditCity(e.target.value)}
+                className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 text-[#0F0F0F] text-sm mt-1 focus:outline-none focus:border-[#FF6719]"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[#6B6B6B] font-mono">PREP STAGE</label>
+              <div className="grid grid-cols-1 gap-2 mt-1">
+                {PREP_STAGES.map((s) => (
+                  <button
+                    key={s.key}
+                    onClick={() => setEditStage(s.key)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm btn-press ${
+                      editStage === s.key ? 'border-[#FF6719] bg-[#FF6719]/10' : 'border-[#E5E5E5] bg-white'
+                    }`}
+                  >
+                    <span>{s.emoji}</span>
+                    <span className="text-[#0F0F0F]">{s.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={saveEdit}
+              className="w-full bg-[#FF6719] text-white rounded-xl py-3 text-sm font-bold btn-press"
+            >
+              SAVE
+            </button>
           </div>
-          <Button fullWidth size="lg" onClick={saveEdit}>SAVE</Button>
-        </div>
-      </Sheet>
+        </LightSheet>
+      )}
 
       {/* CREATE GROUP SHEET */}
-      <Sheet open={createOpen} onClose={() => setCreateOpen(false)} title="CREATE GROUP">
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs text-[#A8C5B0] font-mono">GROUP NAME</label>
-            <input
-              value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
-              placeholder="e.g. Delhi UPSC Warriors"
-              className="w-full bg-[#1E3D29] border border-[#4A7A5A] rounded-xl px-4 py-3 text-white text-sm mt-1 focus:outline-none focus:border-[#FF6B00]"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-[#A8C5B0] font-mono">CITY (AUTO FROM PROFILE)</label>
-            <div className="mt-1 px-4 py-3 bg-[#1E3D29] border border-[#4A7A5A] rounded-xl text-[#A8C5B0] text-sm">
-              {profile.city ?? 'Not set'}
+      {createOpen && (
+        <LightSheet open={createOpen} onClose={() => setCreateOpen(false)} title="CREATE GROUP">
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs text-[#6B6B6B] font-mono">GROUP NAME</label>
+              <input
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                placeholder="e.g. Delhi UPSC Warriors"
+                className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 text-[#0F0F0F] text-sm mt-1 focus:outline-none focus:border-[#FF6719] placeholder:text-[#6B6B6B]"
+              />
             </div>
-          </div>
-          <div>
-            <label className="text-xs text-[#A8C5B0] font-mono">MAX MEMBERS</label>
-            <div className="flex gap-2 mt-1">
-              {([5, 10, 20] as MaxMembers[]).map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setGroupMax(n)}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-mono transition-colors ${
-                    groupMax === n ? 'bg-[#FF6B00] text-white' : 'bg-[#1E3D29] border border-[#4A7A5A] text-[#A8C5B0]'
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
+            <div>
+              <label className="text-xs text-[#6B6B6B] font-mono">CITY (AUTO FROM PROFILE)</label>
+              <div className="mt-1 px-4 py-3 bg-white border border-[#E5E5E5] rounded-xl text-[#6B6B6B] text-sm">
+                {profile.city ?? 'Not set'}
+              </div>
             </div>
+            <div>
+              <label className="text-xs text-[#6B6B6B] font-mono">MAX MEMBERS</label>
+              <div className="flex gap-2 mt-1">
+                {([5, 10, 20] as MaxMembers[]).map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setGroupMax(n)}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-mono transition-colors ${
+                      groupMax === n ? 'bg-[#FF6719] text-white' : 'bg-white border border-[#E5E5E5] text-[#6B6B6B]'
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={handleCreateGroup}
+              disabled={creating || !groupName.trim()}
+              className="w-full bg-[#FF6719] text-white rounded-xl py-3 text-sm font-bold btn-press disabled:opacity-50"
+            >
+              {creating ? 'CREATING…' : 'CREATE'}
+            </button>
           </div>
-          <Button fullWidth size="lg" disabled={creating || !groupName.trim()} onClick={handleCreateGroup}>
-            {creating ? 'CREATING…' : 'CREATE'}
-          </Button>
-        </div>
-      </Sheet>
+        </LightSheet>
+      )}
 
       {/* POST DETAIL SHEET */}
-      <Sheet open={!!detailPost} onClose={() => setDetailPost(null)} title={detailPost?.post_type === 'article' ? 'ARTICLE' : 'SESSION'}>
-        {detailPost && <PostDetail post={detailPost} />}
-      </Sheet>
+      {detailPost && (
+        <LightSheet open={!!detailPost} onClose={() => setDetailPost(null)} title={detailPost.post_type === 'article' ? 'ARTICLE' : 'SESSION'}>
+          <PostDetail post={detailPost} />
+        </LightSheet>
+      )}
 
       {/* TOAST */}
       {toast && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#2D5A3D] text-[#F5EDD0] text-sm px-4 py-2.5 rounded-lg shadow-lg animate-fade-in"
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#F2F2F2] border border-[#E5E5E5] text-[#0F0F0F] text-sm px-4 py-2.5 rounded-lg shadow-lg animate-fade-in"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
           {toast}
@@ -710,73 +729,125 @@ export function YouScreen({
       )}
 
       {/* VERIFICATION SHEET */}
-      <Sheet open={verifyOpen} onClose={() => setVerifyOpen(false)} title="CLAIM SELECTED STATUS">
-        <VerificationForm
-          userId={profile.id}
-          onClose={() => setVerifyOpen(false)}
-          onSubmitted={() => {
-            setVerifyOpen(false);
-            setToast("Submitted. We'll verify within 48 hours.");
-            setTimeout(() => setToast(null), 4000);
-            refreshProfile();
-          }}
-        />
-      </Sheet>
+      {verifyOpen && (
+        <LightSheet open={verifyOpen} onClose={() => setVerifyOpen(false)} title="CLAIM SELECTED STATUS">
+          <VerificationForm
+            userId={profile.id}
+            onClose={() => setVerifyOpen(false)}
+            onSubmitted={() => {
+              setVerifyOpen(false);
+              setToast("Submitted. We'll verify within 48 hours.");
+              setTimeout(() => setToast(null), 4000);
+              refreshProfile();
+            }}
+          />
+        </LightSheet>
+      )}
 
       {/* SETTINGS SHEET */}
-      <Sheet open={settingsOpen} onClose={() => setSettingsOpen(false)} title="SETTINGS">
-        <div className="space-y-3">
-          <Card className="p-4 space-y-3">
-            <SettingRow icon={<Bell size={16} />} label="Notifications" defaultOn />
-            <div className="h-px bg-[#4A7A5A]/40" />
-            <SettingRow icon={<MapPin size={16} />} label="Public profile" defaultOn={profile.is_public} onToggle={async (v) => {
-              await supabase.from('profiles').update({ is_public: v }).eq('id', profile.id);
-              refreshProfile();
-            }} />
-          </Card>
+      {settingsOpen && (
+        <LightSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} title="SETTINGS">
+          <div className="space-y-3">
+            <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-4 space-y-3">
+              <SettingRow icon={<Bell size={16} />} label="Notifications" defaultOn />
+              <div className="h-px bg-[#E5E5E5]" />
+              <SettingRow icon={<MapPin size={16} />} label="Public profile" defaultOn={profile.is_public} onToggle={async (v) => {
+                await supabase.from('profiles').update({ is_public: v }).eq('id', profile.id);
+                refreshProfile();
+              }} />
+            </div>
 
-          <Button variant="outline" size="md" fullWidth onClick={() => {
-            setEditName(profile.name);
-            setEditCity(profile.city ?? '');
-            setEditStage(profile.prep_stage);
-            setEditOpen(true);
-          }}>
-            <Pencil size={14} /> EDIT NAME, CITY, STAGE
-          </Button>
+            <button
+              onClick={() => {
+                setEditName(profile.name);
+                setEditCity(profile.city ?? '');
+                setEditStage(profile.prep_stage);
+                setEditOpen(true);
+              }}
+              className="w-full border border-[#E5E5E5] text-[#0F0F0F] bg-white rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 btn-press"
+            >
+              <Pencil size={14} /> EDIT NAME, CITY, STAGE
+            </button>
 
-          <Button variant="danger" size="md" fullWidth onClick={handleSignOut}>
-            <LogOut size={14} /> SIGN OUT
-          </Button>
+            <button
+              onClick={handleSignOut}
+              className="w-full text-[#FF3131] bg-white border border-[#E5E5E5] rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 btn-press"
+            >
+              <LogOut size={14} /> SIGN OUT
+            </button>
 
-          <button className="w-full text-[#FF3131] text-xs py-4">Delete account</button>
-        </div>
-      </Sheet>
+            <button className="w-full text-[#FF3131] text-xs py-4">Delete account</button>
+          </div>
+        </LightSheet>
+      )}
 
       {/* TRIAL / PRO STATUS SHEET */}
-      <Sheet open={trialOpen} onClose={() => setTrialOpen(false)} title="PRO STATUS">
-        <div className="space-y-4 text-center">
-          <div className="w-16 h-16 rounded-full bg-[#FFD700]/15 flex items-center justify-center mx-auto">
-            <Crown size={28} className="text-[#FFD700]" />
+      {trialOpen && (
+        <LightSheet open={trialOpen} onClose={() => setTrialOpen(false)} title="PRO STATUS">
+          <div className="space-y-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-[#FFF8E7] flex items-center justify-center mx-auto">
+              <Crown size={28} className="text-[#FF6719]" />
+            </div>
+            {trialActive ? (
+              <>
+                <p className="font-mono text-sm text-[#0F0F0F]">PRO TRIAL ACTIVE</p>
+                <p className="text-[#6B6B6B] text-sm">
+                  You have <span className="text-[#FF6719] font-bold">{trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'}</span> of free PRO access left.
+                </p>
+                <p className="text-[#6B6B6B] text-xs">Full access to Tribe: study groups, discover, group feeds, and leaderboards.</p>
+              </>
+            ) : (
+              <>
+                <p className="font-mono text-sm text-[#0F0F0F]">PRO TRIAL EXPIRED</p>
+                <p className="text-[#6B6B6B] text-sm">Upgrade to PRO to unlock Tribe features.</p>
+                <button
+                  onClick={() => setTrialOpen(true)}
+                  className="w-full bg-[#FF6719] text-white rounded-xl py-3 text-sm font-bold btn-press flex items-center justify-center gap-2"
+                >
+                  <Crown size={16} /> UPGRADE TO PRO
+                </button>
+              </>
+            )}
           </div>
-          {trialActive ? (
-            <>
-              <p className="font-mono text-sm text-[#F5EDD0]">PRO TRIAL ACTIVE</p>
-              <p className="text-[#A8C5B0] text-sm">
-                You have <span className="text-[#FFD700] font-bold">{trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'}</span> of free PRO access left.
-              </p>
-              <p className="text-[#6B8F75] text-xs">Full access to Tribe: study groups, discover, group feeds, and leaderboards.</p>
-            </>
-          ) : (
-            <>
-              <p className="font-mono text-sm text-[#F5EDD0]">PRO TRIAL EXPIRED</p>
-              <p className="text-[#A8C5B0] text-sm">Upgrade to PRO to unlock Tribe features.</p>
-              <Button variant="gold" size="lg" fullWidth>
-                <Crown size={16} /> UPGRADE TO PRO
-              </Button>
-            </>
-          )}
+        </LightSheet>
+      )}
+    </div>
+  );
+}
+
+// ---- light-themed sheet (local, to avoid dark Card/Sheet defaults) ----
+
+function LightSheet({
+  open,
+  onClose,
+  title,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  children: React.ReactNode;
+}) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col justify-end">
+      <div className="absolute inset-0 bg-black/40 animate-fade-in" onClick={onClose} />
+      <div className="relative bg-white border-t border-[#E5E5E5] rounded-t-3xl max-h-[85vh] overflow-y-auto animate-sheet-up safe-bottom">
+        <div className="sticky top-0 bg-white pt-3 pb-2 px-5 border-b border-[#E5E5E5] z-10">
+          <div className="w-10 h-1 bg-[#E5E5E5] rounded-full mx-auto mb-3" />
+          <div className="flex items-center justify-between">
+            {title ? (
+              <h3 className="font-mono text-sm text-[#0F0F0F] tracking-wide">{title}</h3>
+            ) : (
+              <span />
+            )}
+            <button onClick={onClose} className="text-[#6B6B6B] hover:text-[#0F0F0F] btn-press p-1">
+              <X size={18} />
+            </button>
+          </div>
         </div>
-      </Sheet>
+        <div className="px-5 py-4">{children}</div>
+      </div>
     </div>
   );
 }
@@ -786,8 +857,8 @@ export function YouScreen({
 function HeaderStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="text-center">
-      <p className="font-bold text-[15px] text-[#F5EDD0] leading-none">{value}</p>
-      <p className="text-[11px] text-[#A8C5B0] mt-0.5">{label}</p>
+      <p className="font-bold text-[15px] text-[#FF6719] leading-none">{value}</p>
+      <p className="text-[11px] text-[#6B6B6B] mt-0.5">{label}</p>
     </div>
   );
 }
@@ -795,21 +866,21 @@ function HeaderStat({ label, value }: { label: string; value: number }) {
 function CompactStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <p className="font-mono text-[13px] text-[#FFD700] leading-none">{value}</p>
-      <p className="text-[9px] text-[#6B8F75] font-mono tracking-wide mt-0.5">{label}</p>
+      <p className="font-mono text-[13px] text-[#FF6719] leading-none">{value}</p>
+      <p className="text-[9px] text-[#6B6B6B] font-mono tracking-wide mt-0.5">{label}</p>
     </div>
   );
 }
 
 function Divider() {
-  return <div className="w-px h-7 bg-[#4A7A5A]/60" />;
+  return <div className="w-px h-7 bg-[#E5E5E5]" />;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between items-center">
-      <span className="text-xs text-[#A8C5B0] font-mono">{label}</span>
-      <span className="text-sm text-[#F5EDD0] text-right max-w-[60%] truncate">{value}</span>
+      <span className="text-xs text-[#6B6B6B] font-mono">{label}</span>
+      <span className="text-sm text-[#0F0F0F] text-right max-w-[60%] truncate">{value}</span>
     </div>
   );
 }
@@ -843,8 +914,8 @@ function PostDetail({ post }: { post: FeedPost }) {
         <Row label="Posted" value={timeAgo(post.created_at)} />
       </div>
       {isArticle && post.content && (
-        <div className="bg-[#2D5A3D] rounded-xl p-3 border border-[#4A7A5A]">
-          <p className="text-sm text-[#F5EDD0] whitespace-pre-wrap">{post.content}</p>
+        <div className="bg-[#F2F2F2] rounded-xl p-3 border border-[#E5E5E5]">
+          <p className="text-sm text-[#0F0F0F] whitespace-pre-wrap">{post.content}</p>
         </div>
       )}
     </div>
@@ -853,16 +924,19 @@ function PostDetail({ post }: { post: FeedPost }) {
 
 function GroupCard({ group, onOpen }: { group: GroupWithCount; onOpen: () => void }) {
   return (
-    <Card className="p-3 flex items-center gap-3" onClick={onOpen}>
-      <div className="w-10 h-10 rounded-xl bg-[#FF6B00]/20 flex items-center justify-center shrink-0">
-        <Users size={18} className="text-[#FF6B00]" />
+    <div
+      onClick={onOpen}
+      className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-3 flex items-center gap-3 cursor-pointer btn-press"
+    >
+      <div className="w-10 h-10 rounded-xl bg-[#FF6719]/15 flex items-center justify-center shrink-0">
+        <Users size={18} className="text-[#FF6719]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-[#F5EDD0] truncate">{group.name}</p>
-        <p className="text-xs text-[#6B8F75]">{group.city ?? 'Anywhere'} · {group.member_count}/{group.max_members}</p>
+        <p className="text-sm text-[#0F0F0F] truncate">{group.name}</p>
+        <p className="text-xs text-[#6B6B6B]">{group.city ?? 'Anywhere'} · {group.member_count}/{group.max_members}</p>
       </div>
-      <span className="text-[10px] font-mono text-[#A8C5B0] flex items-center gap-0.5">OPEN <ChevronRight size={12} /></span>
-    </Card>
+      <span className="text-[10px] font-mono text-[#6B6B6B] flex items-center gap-0.5">OPEN <ChevronRight size={12} /></span>
+    </div>
   );
 }
 
@@ -880,22 +954,22 @@ function DiscoverGroupCard({
   const sameCity = myCity && group.city === myCity;
   const scopeLabel = sameCity ? 'YOUR CITY' : group.city ? group.city : 'NATIONAL';
   return (
-    <Card className="p-3 flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-[#4CAF7D]/20 flex items-center justify-center shrink-0">
-        <Users size={18} className="text-[#4CAF7D]" />
+    <div className="bg-[#F2F2F2] border border-[#E5E5E5] rounded-2xl p-3 flex items-center gap-3">
+      <div className="w-10 h-10 rounded-xl bg-[#FF6719]/15 flex items-center justify-center shrink-0">
+        <Users size={18} className="text-[#FF6719]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-[#F5EDD0] truncate">{group.name}</p>
-        <p className="text-xs text-[#6B8F75]">{scopeLabel} · {group.member_count}/{group.max_members}</p>
+        <p className="text-sm text-[#0F0F0F] truncate">{group.name}</p>
+        <p className="text-xs text-[#6B6B6B]">{scopeLabel} · {group.member_count}/{group.max_members}</p>
       </div>
       {joined ? (
-        <span className="text-[10px] font-mono text-[#4CAF7D]">JOINED</span>
+        <span className="text-[10px] font-mono text-[#FF6719]">JOINED</span>
       ) : (
-        <button onClick={onJoin} className="text-[10px] font-mono text-white bg-[#FF6B00] px-3 py-1.5 rounded-lg btn-press">
+        <button onClick={onJoin} className="text-[10px] font-mono text-white bg-[#FF6719] px-3 py-1.5 rounded-lg btn-press">
           JOIN
         </button>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -913,12 +987,12 @@ function SettingRow({
   const [on, setOn] = useState(defaultOn ?? false);
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2 text-[#F5EDD0] text-sm">
+      <div className="flex items-center gap-2 text-[#0F0F0F] text-sm">
         {icon} {label}
       </div>
       <button
         onClick={() => { const v = !on; setOn(v); onToggle?.(v); }}
-        className={`w-10 h-6 rounded-full transition-colors relative ${on ? 'bg-[#FF6B00]' : 'bg-[#4A7A5A]'}`}
+        className={`w-10 h-6 rounded-full transition-colors relative ${on ? 'bg-[#FF6719]' : 'bg-[#E5E5E5]'}`}
       >
         <span
           className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${on ? 'translate-x-4' : 'translate-x-0.5'}`}
@@ -1013,14 +1087,14 @@ function VerificationForm({
       )}
 
       <div>
-        <p className="text-xs text-[#A8C5B0] font-mono mb-2">Service</p>
+        <p className="text-xs text-[#6B6B6B] font-mono mb-2">Service</p>
         <div className="flex flex-wrap gap-2">
           {VERIFICATION_SERVICES.map((s) => (
             <button
               key={s}
               onClick={() => setService(s)}
               className={`px-3 py-1.5 rounded-lg text-xs font-mono ${
-                service === s ? 'bg-[#FF6B00] text-white' : 'bg-[#2D5A3D] text-[#A8C5B0]'
+                service === s ? 'bg-[#FF6719] text-white' : 'bg-white text-[#6B6B6B] border border-[#E5E5E5]'
               }`}
             >
               {s}
@@ -1030,43 +1104,43 @@ function VerificationForm({
       </div>
 
       <div>
-        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Year of selection</p>
+        <p className="text-xs text-[#6B6B6B] font-mono mb-1.5">Year of selection</p>
         <input
           type="number"
           value={year}
           onChange={(e) => setYear(e.target.value)}
           placeholder="e.g. 2024"
-          className="w-full bg-[#1E3D29] text-[#F5EDD0] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B8F75] focus:outline-none border border-[#4A7A5A]"
+          className="w-full bg-white text-[#0F0F0F] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B6B6B] focus:outline-none border border-[#E5E5E5] focus:border-[#FF6719]"
         />
       </div>
 
       <div>
-        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Roll number</p>
+        <p className="text-xs text-[#6B6B6B] font-mono mb-1.5">Roll number</p>
         <input
           type="text"
           value={rollNumber}
           onChange={(e) => setRollNumber(e.target.value)}
           placeholder="e.g. 1234567"
-          className="w-full bg-[#1E3D29] text-[#F5EDD0] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B8F75] focus:outline-none border border-[#4A7A5A]"
+          className="w-full bg-white text-[#0F0F0F] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B6B6B] focus:outline-none border border-[#E5E5E5] focus:border-[#FF6719]"
         />
       </div>
 
       <div>
-        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Cadre allotted</p>
+        <p className="text-xs text-[#6B6B6B] font-mono mb-1.5">Cadre allotted</p>
         <input
           type="text"
           value={cadreAllotted}
           onChange={(e) => setCadreAllotted(e.target.value)}
           placeholder="e.g. Rajasthan"
-          className="w-full bg-[#1E3D29] text-[#F5EDD0] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B8F75] focus:outline-none border border-[#4A7A5A]"
+          className="w-full bg-white text-[#0F0F0F] text-sm rounded-lg px-3 py-2.5 placeholder:text-[#6B6B6B] focus:outline-none border border-[#E5E5E5] focus:border-[#FF6719]"
         />
       </div>
 
       <div>
-        <p className="text-xs text-[#A8C5B0] font-mono mb-1.5">Upload proof</p>
-        <label className="flex items-center gap-2 bg-[#1E3D29] border border-[#4A7A5A] rounded-lg px-3 py-2.5 cursor-pointer">
-          <Upload size={16} className="text-[#A8C5B0]" />
-          <span className="text-xs text-[#A8C5B0] font-mono flex-1">
+        <p className="text-xs text-[#6B6B6B] font-mono mb-1.5">Upload proof</p>
+        <label className="flex items-center gap-2 bg-white border border-[#E5E5E5] rounded-lg px-3 py-2.5 cursor-pointer">
+          <Upload size={16} className="text-[#6B6B6B]" />
+          <span className="text-xs text-[#6B6B6B] font-mono flex-1">
             {file ? file.name : 'Choose image or PDF...'}
           </span>
         </label>
@@ -1083,7 +1157,7 @@ function VerificationForm({
       <button
         onClick={handleSubmit}
         disabled={submitting}
-        className="w-full py-3 rounded-xl bg-[#FF6B00] text-white text-sm font-bold btn-press disabled:opacity-50"
+        className="w-full py-3 rounded-xl bg-[#FF6719] text-white text-sm font-bold btn-press disabled:opacity-50"
       >
         {submitting ? 'SUBMITTING...' : 'SUBMIT FOR VERIFICATION'}
       </button>
