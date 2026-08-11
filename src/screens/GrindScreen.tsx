@@ -17,13 +17,14 @@ export function GrindScreen() {
   const [giveUpOpen, setGiveUpOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [nearbyOpen, setNearbyOpen] = useState(false);
-  const [subject, setSubject] = useState<SubjectKey | null>(null);
+  const [subject, setSubject] = useState('');
   const [topic, setTopic] = useState('');
   const [duration, setDuration] = useState(25);
   const [customMin, setCustomMin] = useState('');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [nearbyBuilders, setNearbyBuilders] = useState<Profile[]>([]);
   const [sharedToSangam, setSharedToSangam] = useState(false);
+  const [recentSubjects, setRecentSubjects] = useState<string[]>([]);
 
   const isGuest = !session;
 
@@ -55,25 +56,39 @@ export function GrindScreen() {
   }, [session, profile?.city]);
 
   const startSession = () => {
-    if (isGuest) {
-      setSetupOpen(true);
-      return;
+    if (!isGuest) {
+      supabase
+        .from('study_sessions')
+        .select('subject')
+        .eq('user_id', session!.user.id)
+        .not('subject', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(30)
+        .then(({ data }) => {
+          const seen = new Set<string>();
+          const distinct: string[] = [];
+          (data ?? []).forEach((r) => {
+            const s = r.subject as string | null;
+            if (s && !seen.has(s)) { seen.add(s); distinct.push(s); }
+          });
+          setRecentSubjects(distinct.slice(0, 8));
+        });
     }
     setSetupOpen(true);
   };
 
   const beginConstruction = async () => {
     const mins = duration === 0 ? parseInt(customMin) || 25 : duration;
-    if (!subject) return;
     setSetupOpen(false);
+    const subj = subject.trim() || 'General';
     await sess.startSession({
-      subject,
+      subject: subj,
       topic,
       durationMins: mins,
       userId: session?.user?.id ?? null,
-      buildingType: buildingTypeForSubject(subject),
+      buildingType: buildingTypeForSubject(subj as SubjectKey),
     });
-    setSubject(null);
+    setSubject('');
     setTopic('');
     setDuration(25);
     setCustomMin('');
@@ -289,22 +304,29 @@ export function GrindScreen() {
           <div className="space-y-5">
             <div>
               <p className="text-xs text-[#A8C5B0] font-mono mb-2">SUBJECT</p>
-              <div className="grid grid-cols-2 gap-2">
-                {SUBJECTS.map((s) => (
-                  <button
-                    key={s.key}
-                    onClick={() => setSubject(s.key)}
-                    className={`flex items-center gap-2 px-3 py-3 rounded-xl border text-left text-sm btn-press ${
-                      subject === s.key
-                        ? 'border-[#FF6B00] bg-[#FF6B00]/10'
-                        : 'border-[#4A7A5A] bg-[#1E3D29]'
-                    }`}
-                  >
-                    <span>{s.emoji}</span>
-                    <span className="text-[#F5EDD0] text-xs">{s.key}</span>
-                  </button>
-                ))}
-              </div>
+              <input
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="e.g. GS1, Optional Subject (leave blank)"
+                className="w-full bg-[#1E3D29] border border-[#4A7A5A] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#FF6B00]"
+              />
+              {!isGuest && recentSubjects.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {recentSubjects.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSubject(s)}
+                      className={`px-3 py-1.5 rounded-lg text-xs btn-press border ${
+                        subject === s
+                          ? 'border-[#FF6B00] bg-[#FF6B00]/10 text-[#FF6B00]'
+                          : 'border-[#4A7A5A] bg-[#1E3D29] text-[#A8C5B0]'
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>
@@ -349,7 +371,6 @@ export function GrindScreen() {
               fullWidth
               size="lg"
               onClick={beginConstruction}
-              disabled={!subject}
             >
               BEGIN CONSTRUCTION
             </Button>
