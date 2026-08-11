@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
 import { IsoCity } from '@/components/IsoCity';
@@ -108,6 +108,9 @@ export function CityScreen({ onBack }: { onBack: () => void }) {
         )}
       </div>
 
+      {/* stats breakdown */}
+      <CityStats buildings={buildings} />
+
       {/* footer hint */}
       <div className="px-4 py-2 text-center border-t border-[#4A7A5A]/50">
         <p className="text-xs text-[#6B8F75]">Drag to pan · Pinch zoom buttons above · Tap a building</p>
@@ -150,6 +153,81 @@ function Detail({ label, value }: { label: string; value: string }) {
     <div className="bg-[#1E3D29] rounded-xl p-3">
       <p className="font-mono text-lg text-[#FFD700]">{value}</p>
       <p className="text-xs text-[#6B8F75] font-mono">{label}</p>
+    </div>
+  );
+}
+
+function CityStats({ buildings }: { buildings: Building[] }) {
+  const { byType, bySubject } = useMemo(() => {
+    const typeMap = new Map<string, { count: number; floors: number }>();
+    const subjMap = new Map<string, { count: number; mins: number }>();
+    for (const b of buildings) {
+      const t = b.building_type ?? 'unknown';
+      const te = typeMap.get(t) ?? { count: 0, floors: 0 };
+      te.count += 1;
+      te.floors += b.floors ?? 0;
+      typeMap.set(t, te);
+
+      const s = b.subject ?? 'Unknown';
+      const se = subjMap.get(s) ?? { count: 0, mins: 0 };
+      se.count += 1;
+      se.mins += b.duration_mins ?? 0;
+      subjMap.set(s, se);
+    }
+    return {
+      byType: Array.from(typeMap.entries()).sort((a, b) => b[1].floors - a[1].floors),
+      bySubject: Array.from(subjMap.entries()).sort((a, b) => b[1].mins - a[1].mins),
+    };
+  }, [buildings]);
+
+  if (buildings.length === 0) return null;
+
+  return (
+    <div className="px-4 pt-3 pb-1">
+      <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+        <StatsColumn title="BY BUILDING" rows={byType.map(([label, v]) => ({
+          label,
+          count: v.count,
+          total: `${v.floors}f`,
+        }))} />
+        <StatsColumn title="BY SUBJECT" rows={bySubject.map(([label, v]) => ({
+          icon: subjectByKey(label)?.emoji ?? '🏛️',
+          label,
+          count: v.count,
+          total: formatDuration(v.mins),
+        }))} />
+      </div>
+    </div>
+  );
+}
+
+function StatsColumn({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: Array<{ icon?: string; label: string; count: number; total: string }>;
+}) {
+  return (
+    <div className="bg-[#2D5A3D] rounded-xl p-3 shrink-0" style={{ minWidth: 160, maxHeight: 180 }}>
+      <p className="font-mono text-[10px] text-[#6B8F75] tracking-wide mb-2">{title}</p>
+      <div className="space-y-1.5 overflow-y-auto" style={{ maxHeight: 140 }}>
+        {rows.length === 0 ? (
+          <p className="text-xs text-[#6B8F75] font-mono">—</p>
+        ) : (
+          rows.map((r) => (
+            <div key={r.label} className="flex items-center justify-between gap-2">
+              <span className="text-xs text-[#F5EDD0] font-mono truncate flex items-center gap-1">
+                {r.icon && <span>{r.icon}</span>}
+                {r.label}
+              </span>
+              <span className="text-[10px] text-[#6B8F75] font-mono shrink-0">
+                {r.count} · {r.total}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
