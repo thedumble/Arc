@@ -29,13 +29,13 @@ type SessionContextValue = {
     subject: string;
     topic: string;
     durationMins: number;
-    userId: string;
+    userId: string | null;
     buildingType: string;
   }) => Promise<void>;
   pauseSession: () => void;
   resumeSession: () => void;
-  abandonSession: (userId: string) => Promise<void>;
-  completeSession: (userId: string, profile: { total_hours?: number; total_buildings?: number; last_session_date?: string | null | undefined; current_streak?: number } | null) => Promise<void>;
+  abandonSession: (userId: string | null) => Promise<void>;
+  completeSession: (userId: string | null, profile: { total_hours?: number; total_buildings?: number; last_session_date?: string | null | undefined; current_streak?: number } | null) => Promise<void>;
   dismissComplete: () => void;
 };
 
@@ -76,19 +76,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     subject: string;
     topic: string;
     durationMins: number;
-    userId: string;
+    userId: string | null;
     buildingType: string;
   }) => {
     const totalSec = config.durationMins * 60;
-    const { data } = await supabase.from('study_sessions').insert({
-      user_id: config.userId,
-      subject: config.subject,
-      topic: config.topic,
-      duration_mins: config.durationMins,
-      completed: false,
-      abandoned: false,
-      building_type: config.buildingType,
-    }).select().single();
+    let sessionId: string | null = null;
+    if (config.userId) {
+      const { data } = await supabase.from('study_sessions').insert({
+        user_id: config.userId,
+        subject: config.subject,
+        topic: config.topic,
+        duration_mins: config.durationMins,
+        completed: false,
+        abandoned: false,
+        building_type: config.buildingType,
+      }).select().single();
+      sessionId = data?.id ?? null;
+    }
 
     completedRef.current = false;
     setState({
@@ -97,7 +101,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       totalSec,
       subject: config.subject,
       topic: config.topic,
-      sessionId: data?.id ?? null,
+      sessionId,
       floorsBuilt: 1,
       buildingType: config.buildingType,
     });
@@ -114,9 +118,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     startTick();
   };
 
-  const abandonSession = async (userId: string) => {
+  const abandonSession = async (userId: string | null) => {
     clearTick();
-    if (state.sessionId) {
+    if (userId && state.sessionId) {
       await supabase.from('study_sessions')
         .update({ abandoned: true, completed: false })
         .eq('id', state.sessionId);
@@ -133,11 +137,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setState(defaultState);
   };
 
-  const completeSession = async (userId: string, profile: { total_hours?: number; total_buildings?: number; last_session_date?: string | null | undefined; current_streak?: number } | null) => {
+  const completeSession = async (userId: string | null, profile: { total_hours?: number; total_buildings?: number; last_session_date?: string | null | undefined; current_streak?: number } | null) => {
     if (!state.sessionId || completedRef.current) return;
     completedRef.current = true;
     const mins = Math.round(state.totalSec / 60);
     const floors = Math.max(1, state.floorsBuilt);
+
+    if (!userId) return;
 
     await supabase.from('study_sessions')
       .update({ completed: true, duration_mins: mins })

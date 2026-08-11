@@ -65,13 +65,12 @@ export function GrindScreen() {
   const beginConstruction = async () => {
     const mins = duration === 0 ? parseInt(customMin) || 25 : duration;
     if (!subject) return;
-    if (!session?.user?.id) return;
     setSetupOpen(false);
     await sess.startSession({
       subject,
       topic,
       durationMins: mins,
-      userId: session.user.id,
+      userId: session?.user?.id ?? null,
       buildingType: buildingTypeForSubject(subject),
     });
     setSubject(null);
@@ -127,9 +126,9 @@ export function GrindScreen() {
 
   const completedHandled = useRef(false);
   useEffect(() => {
-    if (sess.state.status === 'complete' && !completedHandled.current && session?.user?.id) {
+    if (sess.state.status === 'complete' && !completedHandled.current) {
       completedHandled.current = true;
-      sess.completeSession(session.user.id, profile).then(() => refreshProfile());
+      sess.completeSession(session?.user?.id ?? null, profile).then(() => { if (session?.user?.id) refreshProfile(); });
     }
     if (sess.state.status === 'idle') {
       completedHandled.current = false;
@@ -287,18 +286,6 @@ export function GrindScreen() {
 
       {/* SESSION SETUP SHEET */}
       <Sheet open={setupOpen} onClose={() => setSetupOpen(false)} title="SETUP SESSION">
-        {isGuest ? (
-          <div className="text-center py-6">
-            <p className="text-[#FFD700] font-mono text-sm mb-2">SIGN IN TO SAVE YOUR CITY</p>
-            <p className="text-[#A8C5B0] text-sm mb-6">
-              You can run the timer as a guest, but buildings won't be saved to your city.
-              Create an account to keep your progress.
-            </p>
-            <Button fullWidth size="lg" onClick={() => setSetupOpen(false)}>
-              GOT IT
-            </Button>
-          </div>
-        ) : (
           <div className="space-y-5">
             <div>
               <p className="text-xs text-[#A8C5B0] font-mono mb-2">SUBJECT</p>
@@ -367,7 +354,6 @@ export function GrindScreen() {
               BEGIN CONSTRUCTION
             </Button>
           </div>
-        )}
       </Sheet>
 
       {/* GIVE UP SHEET */}
@@ -379,7 +365,7 @@ export function GrindScreen() {
           <Button variant="outline" size="lg" fullWidth onClick={() => setGiveUpOpen(false)}>
             KEEP BUILDING
           </Button>
-          <Button variant="danger" size="lg" fullWidth onClick={async () => { setGiveUpOpen(false); await sess.abandonSession(session!.user.id); refreshProfile(); }}>
+          <Button variant="danger" size="lg" fullWidth onClick={async () => { setGiveUpOpen(false); await sess.abandonSession(session?.user?.id ?? null); if (session?.user?.id) refreshProfile(); }}>
             ABANDON
           </Button>
         </div>
