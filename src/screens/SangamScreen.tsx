@@ -11,7 +11,7 @@ import {
 } from '@/lib/constants';
 import type { Profile, FeedPost, BuildingType } from '@/lib/types';
 import { IsoBuilding } from '@/components/IsoBuilding';
-import { Search, Bell, PencilLine, ArrowLeft, X } from 'lucide-react';
+import { Search, Bell, PencilLine, ArrowLeft, X, Camera } from 'lucide-react';
 
 type Tab = 'FEED' | 'LEADERBOARD';
 type Range = 'THIS WEEK' | 'ALL TIME';
@@ -540,15 +540,33 @@ function SessionCard({
         </div>
       </div>
 
-      {/* Row 2 */}
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-[14px] text-[#0F0F0F] flex-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-          Completed {post.hours_today?.toFixed(1)}h of {post.subject}
-        </p>
+      {/* Row 2: stat card */}
+      <div className="flex items-center justify-between gap-3 mb-2 bg-[#F7F7F5] rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-lg shrink-0">{subj?.emoji ?? '🏛️'}</span>
+          <div className="min-w-0">
+            <p className="text-[13px] text-[#0F0F0F] truncate" style={{ fontFamily: 'Inter, sans-serif' }}>
+              {post.subject ?? 'General'}
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-bold text-[#0F0F0F]" style={{ fontFamily: 'monospace' }}>
+                {post.hours_today?.toFixed(1)}h
+              </span>
+              <span className="text-[10px] font-medium text-white bg-[#FF6719] rounded-full px-1.5 py-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                +{post.floors_added ?? 1}f
+              </span>
+            </div>
+          </div>
+        </div>
         <div className="shrink-0">
           <IsoBuilding type={buildingType} floors={post.floors_added ?? 1} size={48} />
         </div>
       </div>
+
+      {/* Row 2b: photo */}
+      {post.image_url && (
+        <img src={post.image_url} alt="" className="w-full rounded-xl max-h-64 object-cover mb-2" />
+      )}
 
       {/* Row 3: reactions */}
       <div className="flex items-center gap-3 mb-1">
@@ -624,6 +642,8 @@ function WriteSheet({
   const [coverUrl, setCoverUrl] = useState('');
   const [posting, setPosting] = useState(false);
   const [autoHours, setAutoHours] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -670,6 +690,7 @@ function WriteSheet({
       hours_today: h,
       caption: caption.trim() || `Completed ${h}h of ${subject}.`,
       category: 'STUDY LOG',
+      image_url: photoUrl || null,
     });
     setPosting(false);
     onPosted();
@@ -769,6 +790,41 @@ function WriteSheet({
                 className="w-full bg-[#F2F2F2] rounded-lg px-3 py-2.5 text-sm text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none resize-none"
                 style={{ fontFamily: 'Inter, sans-serif' }}
               />
+            </div>
+            <div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !userId) return;
+                  const path = `${userId}/${Date.now()}`;
+                  const { error: upErr } = await supabase.storage.from('post-images').upload(path, file);
+                  if (upErr) return;
+                  const { data } = supabase.storage.from('post-images').getPublicUrl(path);
+                  setPhotoUrl(data.publicUrl);
+                }}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="text-[12px] text-[#FF6719] font-medium"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                + Add photo
+              </button>
+              {photoUrl && (
+                <div className="mt-2 relative">
+                  <img src={photoUrl} alt="" className="w-full rounded-xl max-h-48 object-cover" />
+                  <button
+                    onClick={() => setPhotoUrl('')}
+                    className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
             </div>
             <button
               onClick={submitSession}
